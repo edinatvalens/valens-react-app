@@ -1,90 +1,98 @@
-import React, { useEffect, RefObject } from 'react';
-import Hls, { HlsConfig } from 'hls.js';
-
+import React, { useEffect, RefObject } from 'react'
+import Hls, { HlsConfig } from 'hls.js'
 
 export interface HlsPlayerProps
-  extends React.VideoHTMLAttributes<HTMLVideoElement> {
-  hlsConfig?: HlsConfig;
-  playerRef: RefObject<HTMLVideoElement>;
-  src: string;
+    extends React.VideoHTMLAttributes<HTMLVideoElement> {
+    hlsConfig?: HlsConfig
+    playerRef: RefObject<HTMLVideoElement>
+    src: string
 }
 
 function ReactHlsPlayer({
-  hlsConfig,
-  playerRef = React.createRef<HTMLVideoElement>(),
-  src,
-  autoPlay,
-  ...props
+    hlsConfig,
+    playerRef = React.createRef<HTMLVideoElement>(),
+    src,
+    autoPlay,
+    ...props
 }: HlsPlayerProps) {
-  useEffect(() => {
-    let hls: Hls;
+    console.log(src)
 
-    function _initPlayer() {
-      if (hls != null) {
-        hls.destroy();
-      }
+    useEffect(() => {
+        let hls: Hls
 
-      const newHls = new Hls({
-        enableWorker: false,
-        ...hlsConfig,
-      });
+        function _initPlayer() {
+            if (hls != null) {
+                hls.destroy()
+            }
 
-      if (playerRef.current != null) {
-        newHls.attachMedia(playerRef.current);
-      }
+            const newHls = new Hls({
+                enableWorker: false,
+                ...hlsConfig,
+            })
 
-      newHls.on(Hls.Events.MEDIA_ATTACHED, () => {
-        newHls.loadSource(src.videoLink);
+            if (playerRef.current != null) {
+                newHls.attachMedia(playerRef.current)
+            }
 
-        newHls.on(Hls.Events.MANIFEST_PARSED, () => {
-          if (autoPlay) {
-            playerRef?.current
-              ?.play()
-              .catch(() =>
-                console.log(
-                  'Unable to autoplay prior to user interaction with the dom.',
-                ),
-              );
-          }
-        });
-      });
+            newHls.on(Hls.Events.MEDIA_ATTACHED, () => {
+                newHls.loadSource(src.videoLink)
 
-      newHls.on(Hls.Events.ERROR, function (event, data) {
-        if (data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              newHls.startLoad();
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              newHls.recoverMediaError();
-              break;
-            default:
-              _initPlayer();
-              break;
-          }
+                newHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    if (autoPlay) {
+                        playerRef?.current
+                            ?.play()
+                            .catch(() =>
+                                console.log(
+                                    'Unable to autoplay prior to user interaction with the dom.'
+                                )
+                            )
+                    }
+                })
+            })
+
+            newHls.on(Hls.Events.ERROR, function (event, data) {
+                if (data.fatal) {
+                    switch (data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            newHls.startLoad()
+                            break
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            newHls.recoverMediaError()
+                            break
+                        default:
+                            _initPlayer()
+                            break
+                    }
+                }
+            })
+
+            hls = newHls
         }
-      });
 
-      hls = newHls;
-    }
+        // Check for Media Source support
+        if (Hls.isSupported()) {
+            _initPlayer()
+        }
 
-    // Check for Media Source support
-    if (Hls.isSupported()) {
-      _initPlayer();
-    }
+        return () => {
+            if (hls != null) {
+                hls.destroy()
+            }
+        }
+    }, [autoPlay, hlsConfig, playerRef, src.videoLink])
 
-    return () => {
-      if (hls != null) {
-        hls.destroy();
-      }
-    };
-  }, [autoPlay, hlsConfig, playerRef, src.videoLink]);
+    // If Media Source is supported, use HLS.js to play video
+    if (Hls.isSupported()) return <video ref={playerRef} {...props} />
 
-  // If Media Source is supported, use HLS.js to play video
-  if (Hls.isSupported()) return <video ref={playerRef} {...props} />;
-
-  // Fallback to using a regular video player if HLS is supported by default in the user's browser
-  return <video ref={playerRef} src={src.videoLink} autoPlay={autoPlay} {...props} />;
+    // Fallback to using a regular video player if HLS is supported by default in the user's browser
+    return (
+        <video
+            ref={playerRef}
+            src={src.videoLink}
+            autoPlay={autoPlay}
+            {...props}
+        />
+    )
 }
 
-export default ReactHlsPlayer;
+export default ReactHlsPlayer
