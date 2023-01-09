@@ -17,7 +17,7 @@ const StyledNotFound = styled.div`
 `
 const NotFound = () => {
     return (
-        <StyledNotFound href="http://localhost:3000/videoabs">
+        <StyledNotFound>
             <h1>404 Not Found</h1>
         </StyledNotFound>
     )
