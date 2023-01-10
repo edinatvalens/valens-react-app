@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactHlsPlayer from './video.tsx'
 import styled from 'styled-components'
 
@@ -21,9 +21,23 @@ const StyledVideo = styled.div`
 
 const Video = (videoLink) => {
     const [isPlaying, setIsPlaying] = useState(false)
+    const playerRef = useRef()
 
-    const play = () => setIsPlaying(true)
-    const pause = () => setIsPlaying(false)
+    useEffect(() => {
+        const playHandler = () => {
+            setIsPlaying(true)
+        }
+        const pauseHandler = () => {
+            setIsPlaying(false)
+        }
+        const elementRef = playerRef.current
+        elementRef.addEventListener('play', playHandler)
+        elementRef.addEventListener('pause', pauseHandler)
+        return () => {
+            elementRef.removeEventListener('play', playHandler)
+            elementRef.removeEventListener('pause', pauseHandler)
+        }
+    }, [])
 
     return (
         <StyledVideo>
@@ -33,9 +47,7 @@ const Video = (videoLink) => {
                 src={videoLink}
                 autoPlay={true}
                 controls={true}
-                isPlaying={isPlaying}
-                onPlay={play}
-                onPause={pause}
+                playerRef={playerRef}
                 muted
                 width="100%"
                 height="auto"
