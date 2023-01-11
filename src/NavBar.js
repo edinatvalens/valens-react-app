@@ -1,8 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import Home from './Home'
-import Video from './Video'
 const StyledNavbar = styled.div`
     width: 100%;
     height: 10%;
