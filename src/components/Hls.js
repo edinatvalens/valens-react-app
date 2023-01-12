@@ -48,13 +48,14 @@ const Video = (videoLink) => {
     const [isPlaying, setIsPlaying] = useState(false)
     const playerRef = useRef()
 
+    const playHandler = () => {
+        setIsPlaying(true)
+    }
+    const pauseHandler = () => {
+        setIsPlaying(false)
+    }
+
     useEffect(() => {
-        const playHandler = () => {
-            setIsPlaying(true)
-        }
-        const pauseHandler = () => {
-            setIsPlaying(false)
-        }
         const elementRef = playerRef.current
         elementRef.addEventListener('play', playHandler)
         elementRef.addEventListener('pause', pauseHandler)
