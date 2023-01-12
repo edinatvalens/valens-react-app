@@ -7,7 +7,6 @@ const StyledHome = styled.div`
     height: auto;
     display: flex;
 `
-
 const Home = () => {
     return (
         <StyledHome>

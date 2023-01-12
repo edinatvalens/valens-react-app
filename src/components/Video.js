@@ -1,14 +1,12 @@
-import './App.css'
+import '../App.css'
 import Hls from './Hls'
 import styled from 'styled-components'
 
 const StyledVideo = styled.div`
-    text-align: center;
     width: 40%;
-    height: 600px;
+    height: 900px;
     display: flex;
 `
-
 function Video() {
     return (
         <StyledVideo>

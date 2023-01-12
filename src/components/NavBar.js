@@ -5,13 +5,14 @@ const StyledNavbar = styled.div`
     height: 10%;
     background-color: rgb(255, 255, 255);
     box-shadow: 5px 5px 5px rgb(235, 235, 224);
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     display: flex;
     justify-content: start;
     align-items: center;
     padding: 10px;
+    z-index: 1;
     a {
         text-decoration: none;
         color: black;
